@@ -1,9 +1,12 @@
 #!/usr/bin/python3
-"""Employee Task API
+"""
+Employee Task API
 
 This script retrieves information about a user's completed and incomplete tasks
-using the jsonplaceholder.typicode.com API.
+using the jsonplaceholder.typicode.com API. It writes the obtained data
+into a CSV file.
 """
+import csv
 import json
 import requests
 from sys import argv
@@ -20,16 +23,9 @@ if __name__ == "__main__":
         'https://jsonplaceholder.typicode.com/todos?userId={}'.format(argv[1]))
     user_todo = json.loads(user_todo_req.text)
 
-    completed = 0
-    not_completed = 0
-    for task in user_todo:
-        if task["completed"]:
-            completed += 1
-        else:
-            not_completed += 1
+    with open('{}.csv'.format(argv[1]), 'w', encoding='UTF=8') as f:
 
-    print(f"Employee {user['name']} is done with tasks"
-          f"({completed}/{not_completed + completed}):")
-    for task in user_todo:
-        if task["completed"]:
-            print(f'\t {task["title"]}')
+        writer = csv.writer(f, quoting=csv.QUOTE_ALL)
+        for task in user_todo:
+            writer.writerow([user["id"], user["username"], task["completed"],
+                             task["title"]])
